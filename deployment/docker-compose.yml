@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: ask_my_cv
+      POSTGRES_PASSWORD: ask_my_cv
+      POSTGRES_DB: ask_my_cv
+    ports:
+      - "5432:5432"
+    volumes:
+      - ask_my_cv_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ask_my_cv -d ask_my_cv"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  ask_my_cv_postgres:

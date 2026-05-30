@@ -1,0 +1,169 @@
+version: "3"
+
+dotenv:
+  - .env
+
+vars:
+  GO: go
+  GOFLAGS: ""
+  BIN: ask-my-cv
+  COVERPROFILE: coverage.out
+  DATA_DIR: '{{default "./data" .DATA_DIR}}'
+  COMPOSE_FILE: deployment/docker-compose.yml
+  DATABASE_URL: '{{default "postgres://ask_my_cv:ask_my_cv@localhost:5432/ask_my_cv?sslmode=disable" .DATABASE_URL}}'
+  HTTP_ADDR: '{{default ":8080" .HTTP_ADDR}}'
+  GOBIN:
+    sh: |
+      if [ -n "$(go env GOBIN)" ]; then
+        echo "$(go env GOBIN)"
+      else
+        echo "$(go env GOPATH)/bin"
+      fi
+
+tasks:
+  default:
+    desc: Show available tasks
+    cmds:
+      - task --list
+
+  tidy:
+    desc: Tidy Go modules
+    cmds:
+      - "{{.GO}} mod tidy"
+
+  fmt:
+    desc: Format Go code
+    cmds:
+      - "{{.GO}} fmt ./..."
+
+  test:
+    desc: Run unit tests. Forwards arguments after `--` to go test.
+    vars:
+      ARGS: "{{coalesce .ARGS .CLI_ARGS}}"
+    cmds:
+      - "{{.GO}} test {{.GOFLAGS}} ./... {{.ARGS}}"
+
+  test-coverage:
+    desc: Run tests with coverage
+    cmds:
+      - "{{.GO}} test {{.GOFLAGS}} ./... -coverprofile={{.COVERPROFILE}}"
+      - "{{.GO}} tool cover -func={{.COVERPROFILE}}"
+
+  build:
+    desc: Build the API binary
+    deps: [tidy]
+    cmds:
+      - "{{.GO}} build {{.GOFLAGS}} -o bin/{{.BIN}} main.go"
+
+  clean:
+    desc: Clean test cache and local build outputs
+    cmds:
+      - "{{.GO}} clean -testcache"
+      - rm -f {{.COVERPROFILE}}
+      - rm -rf bin
+
+  sqlc:
+    desc: Generate sqlc database code
+    cmds:
+      - sqlc generate
+
+  install-sqlc:
+    desc: Install sqlc
+    cmds:
+      - "{{.GO}} install github.com/sqlc-dev/sqlc/cmd/sqlc@v1.27.0"
+
+  install-goose:
+    desc: Install goose migration CLI
+    cmds:
+      - "{{.GO}} install github.com/pressly/goose/v3/cmd/goose@latest"
+
+  install-tools:
+    desc: Install local development tools
+    deps:
+      - install-sqlc
+      - install-goose
+
+  up:
+    desc: Start local Postgres with pgvector. Forwards arguments after `--` to docker compose.
+    vars:
+      ARGS: "{{coalesce .ARGS .CLI_ARGS}}"
+    cmds:
+      - docker compose -f {{.COMPOSE_FILE}} up {{.ARGS}}
+
+  down:
+    desc: Stop local Postgres. Forwards arguments after `--` to docker compose.
+    vars:
+      ARGS: "{{coalesce .ARGS .CLI_ARGS}}"
+    cmds:
+      - docker compose -f {{.COMPOSE_FILE}} down {{.ARGS}}
+
+  destroy:
+    desc: Stop local Postgres and remove volumes
+    cmds:
+      - task: down
+        vars:
+          ARGS: "--volumes"
+
+  db-migrate-up:
+    desc: Apply database migrations with goose. Forwards arguments after `--` to goose.
+    vars:
+      ARGS: "{{coalesce .ARGS .CLI_ARGS}}"
+    cmds:
+      - goose -dir internal/db/migrations postgres "{{.DATABASE_URL}}" up {{.ARGS}}
+
+  db-migrate-down:
+    desc: Roll back database migrations with goose. Forwards arguments after `--` to goose.
+    vars:
+      ARGS: "{{coalesce .ARGS .CLI_ARGS}}"
+    cmds:
+      - goose -dir internal/db/migrations postgres "{{.DATABASE_URL}}" down {{.ARGS}}
+
+  db-status:
+    desc: Show database migration status
+    cmds:
+      - goose -dir internal/db/migrations postgres "{{.DATABASE_URL}}" status
+
+  db-reset:
+    desc: Drop and recreate the public schema, then apply migrations
+    cmds:
+      - psql "{{.DATABASE_URL}}" -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+      - task: db-migrate-up
+
+  ingest:
+    desc: Ingest curated Markdown files. Override with DATA_DIR=./data.
+    cmds:
+      - "{{.GO}} run main.go ingest {{.DATA_DIR}}"
+
+  serve:
+    desc: Run the API server
+    env:
+      HTTP_ADDR: "{{.HTTP_ADDR}}"
+    cmds:
+      - "{{.GO}} run main.go serve-api"
+
+  dev:
+    desc: Run migrations, ingest data, and start the API
+    cmds:
+      - task: db-migrate-up
+      - task: ingest
+      - task: serve
+
+  health:
+    desc: Check local API health
+    cmds:
+      - curl -sS http://localhost{{.HTTP_ADDR}}/health
+
+  sources:
+    desc: List indexed sources from the local API
+    cmds:
+      - curl -sS http://localhost{{.HTTP_ADDR}}/api/v1/sources
+
+  ask:
+    desc: Ask the local API a question with QUESTION="..."
+    vars:
+      QUESTION: '{{default "What backend engineering experience does Bruno have?" .QUESTION}}'
+    cmds:
+      - |
+        curl -sS -X POST http://localhost{{.HTTP_ADDR}}/api/v1/ask \
+          -H "Content-Type: application/json" \
+          -d '{"question":"{{.QUESTION}}"}'

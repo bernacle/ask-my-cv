@@ -17,31 +17,41 @@ Ask My CV is a small Go RAG backend for a portfolio chat widget. It indexes cura
 2. Start Postgres:
 
 ```bash
-docker compose -f deployment/docker-compose.yml up -d
+task up -- -d
 ```
 
 3. Run migrations:
 
 ```bash
-goose -dir internal/db/migrations postgres "$DATABASE_URL" up
+task db-migrate-up
 ```
 
 4. Generate SQL code after query changes:
 
 ```bash
-sqlc generate
+task sqlc
 ```
 
 5. Ingest curated Markdown:
 
 ```bash
-go run main.go ingest ./data
+task ingest
 ```
 
 6. Start the API:
 
 ```bash
-go run main.go serve-api
+task serve
+```
+
+Useful shortcuts:
+
+```bash
+task test
+task build
+task dev
+task health
+task ask QUESTION="What AI/RAG experience does Bruno have?"
 ```
 
 ## API

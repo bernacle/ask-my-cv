@@ -21,6 +21,7 @@ type Querier interface {
 	InsertChunk(ctx context.Context, arg InsertChunkParams) (InsertChunkRow, error)
 	ListSources(ctx context.Context) ([]ListSourcesRow, error)
 	SearchChunks(ctx context.Context, arg SearchChunksParams) ([]SearchChunksRow, error)
+	SearchChunksByKeywords(ctx context.Context, arg SearchChunksByKeywordsParams) ([]SearchChunksByKeywordsRow, error)
 	TouchConversation(ctx context.Context, id uuid.UUID) error
 	UpsertDocument(ctx context.Context, arg UpsertDocumentParams) (Document, error)
 }

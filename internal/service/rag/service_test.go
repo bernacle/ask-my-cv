@@ -3,6 +3,7 @@ package rag
 import (
 	"context"
 	"encoding/json"
+	"strings"
 	"testing"
 
 	db "github.com/brunosimplicio/ask-my-cv/internal/db/sqlc"
@@ -66,6 +67,65 @@ func TestAskNoSourceDoesNotCallChat(t *testing.T) {
 	}
 }
 
+func TestSelectChunksUsesBestChunkForBroadQuestions(t *testing.T) {
+	used, maxSimilarity := selectChunks([]domainchunk.SearchResult{
+		{Similarity: 0.55, SourceTitle: "Bio", SourcePath: "data/bio.md"},
+		{Similarity: 0.50, SourceTitle: "Resume", SourcePath: "data/resume.md"},
+	}, 0.60)
+
+	if maxSimilarity != 0.55 {
+		t.Fatalf("maxSimilarity = %v, want 0.55", maxSimilarity)
+	}
+	if len(used) != 1 || used[0].SourcePath != "data/bio.md" {
+		t.Fatalf("used = %#v, want best fallback chunk", used)
+	}
+}
+
+func TestSelectChunksRejectsVeryWeakMatches(t *testing.T) {
+	used, maxSimilarity := selectChunks([]domainchunk.SearchResult{
+		{Similarity: 0.40, SourceTitle: "Bio", SourcePath: "data/bio.md"},
+	}, 0.60)
+
+	if maxSimilarity != 0.40 {
+		t.Fatalf("maxSimilarity = %v, want 0.40", maxSimilarity)
+	}
+	if len(used) != 0 {
+		t.Fatalf("used = %#v, want none", used)
+	}
+}
+
+func TestMergeChunkResultsPrioritizesKeywordResults(t *testing.T) {
+	keywordID := uuid.New()
+	semanticID := uuid.New()
+	merged := mergeChunkResults([]domainchunk.SearchResult{
+		{ID: keywordID, SourcePath: "data/skills.md"},
+	}, []domainchunk.SearchResult{
+		{ID: semanticID, SourcePath: "data/resume.md"},
+	}, 1)
+
+	if len(merged) != 1 || merged[0].ID != keywordID {
+		t.Fatalf("merged = %#v, want keyword result first", merged)
+	}
+}
+
+func TestExpandRetrievalQueryForBroadProfileQuestion(t *testing.T) {
+	got := expandRetrievalQuery("What does Bruno do?")
+	if !strings.Contains(got, "professional profile senior software engineer") {
+		t.Fatalf("expanded query = %q, want professional profile terms", got)
+	}
+}
+
+func TestExtractKeywordsKeepsAI(t *testing.T) {
+	got := extractKeywords("Does Bruno have AI or RAG experience?")
+	want := map[string]bool{"ai": true, "rag": true, "experience": true}
+	for _, keyword := range got {
+		delete(want, keyword)
+	}
+	if len(want) != 0 {
+		t.Fatalf("extractKeywords missing %#v from %#v", want, got)
+	}
+}
+
 type fakeEmbedder struct{}
 
 func (fakeEmbedder) Model() string { return "text-embedding-3-small" }
@@ -84,6 +144,10 @@ type fakeChunkSearcher struct {
 
 func (f fakeChunkSearcher) Search(context.Context, string, string, int32) ([]domainchunk.SearchResult, error) {
 	return f.results, nil
+}
+
+func (f fakeChunkSearcher) SearchByKeywords(context.Context, []string, string, int32) ([]domainchunk.SearchResult, error) {
+	return nil, nil
 }
 
 type fakeConversations struct {

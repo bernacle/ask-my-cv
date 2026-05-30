@@ -19,6 +19,7 @@ vars:
       else
         echo "$(go env GOPATH)/bin"
       fi
+  GOOSE: "{{.GOBIN}}/goose"
 
 tasks:
   default:
@@ -74,6 +75,8 @@ tasks:
 
   install-goose:
     desc: Install goose migration CLI
+    status:
+      - test -x {{.GOOSE}}
     cmds:
       - "{{.GO}} install github.com/pressly/goose/v3/cmd/goose@latest"
 
@@ -106,22 +109,25 @@ tasks:
 
   db-migrate-up:
     desc: Apply database migrations with goose. Forwards arguments after `--` to goose.
+    deps: [install-goose]
     vars:
       ARGS: "{{coalesce .ARGS .CLI_ARGS}}"
     cmds:
-      - goose -dir internal/db/migrations postgres "{{.DATABASE_URL}}" up {{.ARGS}}
+      - "{{.GOOSE}} -dir internal/db/migrations postgres \"{{.DATABASE_URL}}\" up {{.ARGS}}"
 
   db-migrate-down:
     desc: Roll back database migrations with goose. Forwards arguments after `--` to goose.
+    deps: [install-goose]
     vars:
       ARGS: "{{coalesce .ARGS .CLI_ARGS}}"
     cmds:
-      - goose -dir internal/db/migrations postgres "{{.DATABASE_URL}}" down {{.ARGS}}
+      - "{{.GOOSE}} -dir internal/db/migrations postgres \"{{.DATABASE_URL}}\" down {{.ARGS}}"
 
   db-status:
     desc: Show database migration status
+    deps: [install-goose]
     cmds:
-      - goose -dir internal/db/migrations postgres "{{.DATABASE_URL}}" status
+      - "{{.GOOSE}} -dir internal/db/migrations postgres \"{{.DATABASE_URL}}\" status"
 
   db-reset:
     desc: Drop and recreate the public schema, then apply migrations
@@ -164,6 +170,7 @@ tasks:
       QUESTION: '{{default "What backend engineering experience does Bruno have?" .QUESTION}}'
     cmds:
       - |
+        payload="$(jq -n --arg question "{{.QUESTION}}" '{question: $question}')"
         curl -sS -X POST http://localhost{{.HTTP_ADDR}}/api/v1/ask \
           -H "Content-Type: application/json" \
-          -d '{"question":"{{.QUESTION}}"}'
+          -d "$payload"

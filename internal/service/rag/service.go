@@ -20,7 +20,9 @@ import (
 	"github.com/google/uuid"
 )
 
-const noSourceAnswer = "I don't know from the indexed CV content available right now."
+const noSourceAnswer = "I don't have enough information in Bruno's CV to answer that."
+
+const fallbackSimilarityThreshold = 0.52
 
 type Embedder interface {
 	Model() string
@@ -29,6 +31,7 @@ type Embedder interface {
 
 type ChunkSearcher interface {
 	Search(ctx context.Context, embeddingLiteral string, embeddingModel string, limit int32) ([]domainchunk.SearchResult, error)
+	SearchByKeywords(ctx context.Context, keywords []string, embeddingModel string, limit int32) ([]domainchunk.SearchResult, error)
 }
 
 type ConversationRepository interface {
@@ -123,6 +126,7 @@ func (s *Service) Ask(ctx context.Context, input AskInput) (AskResult, error) {
 		return AskResult{}, apperrors.Invalid("question is required")
 	}
 	normalized := normalizeQuestion(question)
+	retrievalQuery := expandRetrievalQuery(question)
 
 	conversation, err := s.conversations.Ensure(ctx, input.ConversationID)
 	if err != nil {
@@ -156,7 +160,7 @@ func (s *Service) Ask(ctx context.Context, input AskInput) (AskResult, error) {
 		}, nil
 	}
 
-	questionEmbedding, err := s.embedder.Embed(ctx, question)
+	questionEmbedding, err := s.embedder.Embed(ctx, retrievalQuery)
 	if err != nil {
 		return AskResult{}, apperrors.OpenAI("failed to embed question", err)
 	}
@@ -182,7 +186,12 @@ func (s *Service) Ask(ctx context.Context, input AskInput) (AskResult, error) {
 	if err != nil {
 		return AskResult{}, err
 	}
-	used, maxSimilarity := filterChunks(retrieved, s.similarityThreshold)
+	keywordResults, err := s.chunks.SearchByKeywords(ctx, extractKeywords(retrievalQuery), questionEmbedding.Model, int32(s.maxRetrievedChunks))
+	if err != nil {
+		return AskResult{}, err
+	}
+	retrieved = mergeChunkResults(keywordResults, retrieved, s.maxRetrievedChunks)
+	used, maxSimilarity := selectChunks(retrieved, s.similarityThreshold)
 
 	if len(used) == 0 {
 		if err := s.persistExchange(ctx, conversation.ID, question, noSourceAnswer, nil); err != nil {
@@ -288,7 +297,7 @@ func (s *Service) persistExchange(ctx context.Context, conversationID uuid.UUID,
 	return err
 }
 
-func filterChunks(chunks []domainchunk.SearchResult, threshold float64) ([]domainchunk.SearchResult, float64) {
+func selectChunks(chunks []domainchunk.SearchResult, threshold float64) ([]domainchunk.SearchResult, float64) {
 	used := make([]domainchunk.SearchResult, 0, len(chunks))
 	maxSimilarity := 0.0
 	for _, chunk := range chunks {
@@ -299,7 +308,36 @@ func filterChunks(chunks []domainchunk.SearchResult, threshold float64) ([]domai
 			used = append(used, chunk)
 		}
 	}
+	if len(used) == 0 && len(chunks) > 0 && maxSimilarity >= fallbackSimilarityThreshold {
+		used = append(used, chunks[0])
+	}
 	return used, maxSimilarity
+}
+
+func mergeChunkResults(primary []domainchunk.SearchResult, secondary []domainchunk.SearchResult, limit int) []domainchunk.SearchResult {
+	if len(secondary) == 0 {
+		return primary
+	}
+	seen := make(map[uuid.UUID]struct{}, len(primary)+len(secondary))
+	merged := make([]domainchunk.SearchResult, 0, len(primary)+len(secondary))
+	for _, item := range primary {
+		if _, ok := seen[item.ID]; ok {
+			continue
+		}
+		seen[item.ID] = struct{}{}
+		merged = append(merged, item)
+	}
+	for _, item := range secondary {
+		if _, ok := seen[item.ID]; ok {
+			continue
+		}
+		seen[item.ID] = struct{}{}
+		merged = append(merged, item)
+	}
+	if limit > 0 && len(merged) > limit {
+		return merged[:limit]
+	}
+	return merged
 }
 
 func citationsFromChunks(chunks []domainchunk.SearchResult) []message.Citation {
@@ -322,6 +360,45 @@ func citationsFromChunks(chunks []domainchunk.SearchResult) []message.Citation {
 
 func normalizeQuestion(question string) string {
 	return strings.ToLower(strings.Join(strings.Fields(question), " "))
+}
+
+func expandRetrievalQuery(question string) string {
+	normalized := normalizeQuestion(question)
+	switch {
+	case (strings.Contains(normalized, "bruno") && strings.Contains(normalized, "what") && (strings.Contains(normalized, " do") || strings.Contains(normalized, "does"))) ||
+		strings.Contains(normalized, "who is bruno"):
+		return question + " Bruno Simplicio professional profile senior software engineer backend frontend cloud infrastructure"
+	case strings.Contains(normalized, "study") || strings.Contains(normalized, "education") || strings.Contains(normalized, "degree"):
+		return question + " education degree university"
+	default:
+		return question
+	}
+}
+
+func extractKeywords(question string) []string {
+	stopwords := map[string]struct{}{
+		"a": {}, "about": {}, "an": {}, "and": {}, "are": {}, "as": {}, "at": {}, "be": {}, "bruno": {}, "did": {}, "do": {}, "does": {}, "for": {}, "from": {}, "has": {}, "have": {}, "he": {}, "his": {}, "in": {}, "is": {}, "know": {}, "of": {}, "on": {}, "or": {}, "the": {}, "to": {}, "what": {}, "where": {}, "which": {}, "with": {}, "worked": {},
+	}
+	fields := strings.FieldsFunc(strings.ToLower(question), func(r rune) bool {
+		return !(r >= 'a' && r <= 'z') && !(r >= '0' && r <= '9')
+	})
+	keywords := make([]string, 0, len(fields))
+	seen := make(map[string]struct{}, len(fields))
+	for _, field := range fields {
+		field = strings.TrimSpace(field)
+		if len(field) < 3 && field != "ai" {
+			continue
+		}
+		if _, ok := stopwords[field]; ok {
+			continue
+		}
+		if _, ok := seen[field]; ok {
+			continue
+		}
+		seen[field] = struct{}{}
+		keywords = append(keywords, field)
+	}
+	return keywords
 }
 
 func hashIP(ip string) string {

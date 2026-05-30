@@ -41,3 +41,32 @@ func (r *Repository) Search(ctx context.Context, embeddingLiteral string, embedd
 	}
 	return results, nil
 }
+
+func (r *Repository) SearchByKeywords(ctx context.Context, keywords []string, embeddingModel string, limit int32) ([]domainchunk.SearchResult, error) {
+	if len(keywords) == 0 {
+		return nil, nil
+	}
+	rows, err := r.q.SearchChunksByKeywords(ctx, db.SearchChunksByKeywordsParams{
+		EmbeddingModel: embeddingModel,
+		Keywords:       keywords,
+		MatchCount:     limit,
+	})
+	if err != nil {
+		return nil, err
+	}
+	results := make([]domainchunk.SearchResult, 0, len(rows))
+	for _, row := range rows {
+		results = append(results, domainchunk.SearchResult{
+			ID:          row.ID,
+			DocumentID:  row.DocumentID,
+			Content:     row.Content,
+			Metadata:    row.Metadata,
+			SourceTitle: row.SourceTitle,
+			SourcePath:  row.SourcePath,
+			ChunkIndex:  row.ChunkIndex,
+			Distance:    row.Distance,
+			Similarity:  row.Similarity,
+		})
+	}
+	return results, nil
+}

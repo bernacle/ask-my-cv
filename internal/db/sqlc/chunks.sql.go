@@ -150,3 +150,74 @@ func (q *Queries) SearchChunks(ctx context.Context, arg SearchChunksParams) ([]S
 	}
 	return items, nil
 }
+
+const searchChunksByKeywords = `-- name: SearchChunksByKeywords :many
+SELECT
+    c.id,
+    c.document_id,
+    c.content,
+    c.metadata,
+    c.source_title,
+    c.source_path,
+    c.chunk_index,
+    0::double precision AS distance,
+    1::double precision AS similarity
+FROM chunks c
+JOIN documents d ON d.id = c.document_id
+WHERE d.embedding_model = $1
+  AND EXISTS (
+    SELECT 1
+    FROM unnest($2::text[]) AS keyword
+    WHERE c.content ILIKE ('%' || keyword || '%')
+  )
+ORDER BY c.source_path, c.chunk_index
+LIMIT $3
+`
+
+type SearchChunksByKeywordsParams struct {
+	EmbeddingModel string   `json:"embedding_model"`
+	Keywords       []string `json:"keywords"`
+	MatchCount     int32    `json:"match_count"`
+}
+
+type SearchChunksByKeywordsRow struct {
+	ID          uuid.UUID       `json:"id"`
+	DocumentID  uuid.UUID       `json:"document_id"`
+	Content     string          `json:"content"`
+	Metadata    json.RawMessage `json:"metadata"`
+	SourceTitle string          `json:"source_title"`
+	SourcePath  string          `json:"source_path"`
+	ChunkIndex  int32           `json:"chunk_index"`
+	Distance    float64         `json:"distance"`
+	Similarity  float64         `json:"similarity"`
+}
+
+func (q *Queries) SearchChunksByKeywords(ctx context.Context, arg SearchChunksByKeywordsParams) ([]SearchChunksByKeywordsRow, error) {
+	rows, err := q.db.Query(ctx, searchChunksByKeywords, arg.EmbeddingModel, arg.Keywords, arg.MatchCount)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SearchChunksByKeywordsRow
+	for rows.Next() {
+		var i SearchChunksByKeywordsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.DocumentID,
+			&i.Content,
+			&i.Metadata,
+			&i.SourceTitle,
+			&i.SourcePath,
+			&i.ChunkIndex,
+			&i.Distance,
+			&i.Similarity,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

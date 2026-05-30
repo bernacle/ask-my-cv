@@ -8,6 +8,7 @@
 - Maximum generated output: `MAX_OUTPUT_TOKENS`.
 - Repeated exact normalized questions are cached in memory for `CACHE_TTL`.
 - Embedding and chat token usage are written to `token_usage`.
+- Tune `SIMILARITY_THRESHOLD` from `question_events.max_similarity`; for this small CV corpus, `0.60` is a practical starting value.
 
 ## Observability
 

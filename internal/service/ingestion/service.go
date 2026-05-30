@@ -84,7 +84,7 @@ func (s *Service) ingestFile(ctx context.Context, path string) (ingestFileResult
 
 	sourcePath := cleanSourcePath(path)
 	parsed := ParseMarkdown(sourcePath, string(raw))
-	contentHash := hashString(parsed.Body)
+	contentHash := hashString(chunkerVersion + "\n" + parsed.Body)
 
 	existing, found, err := s.documents.GetByPath(ctx, sourcePath)
 	if err != nil {

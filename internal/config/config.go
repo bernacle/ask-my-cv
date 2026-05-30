@@ -45,7 +45,7 @@ func Load() (Config, error) {
 		CORSAllowedOrigins:    splitCSV(getEnv("CORS_ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:3001,https://brunosimplicio.com")),
 		MaxQuestionChars:      getEnvInt("MAX_QUESTION_CHARS", 1000),
 		MaxRetrievedChunks:    getEnvInt("MAX_RETRIEVED_CHUNKS", 6),
-		SimilarityThreshold:   getEnvFloat("SIMILARITY_THRESHOLD", 0.72),
+		SimilarityThreshold:   getEnvFloat("SIMILARITY_THRESHOLD", 0.60),
 		MaxOutputTokens:       getEnvInt("MAX_OUTPUT_TOKENS", 500),
 		RateLimitPerMinute:    getEnvInt("RATE_LIMIT_PER_MINUTE", 10),
 		RateLimitPerDay:       getEnvInt("RATE_LIMIT_PER_DAY", 100),

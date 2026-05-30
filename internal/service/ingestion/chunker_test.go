@@ -36,3 +36,17 @@ func TestChunkMarkdownSplitsLongSectionsWithHeading(t *testing.T) {
 		}
 	}
 }
+
+func TestChunkMarkdownSkipsStandaloneHeadingChunks(t *testing.T) {
+	body := "# Bruno Simplicio Resume\n\n## Profile\n\nBruno is a Senior Software Engineer."
+	chunks := ChunkMarkdown(body)
+	if len(chunks) != 1 {
+		t.Fatalf("len(chunks) = %d, want 1", len(chunks))
+	}
+	if strings.Contains(chunks[0].Content, "Resume\n\n## Profile") {
+		t.Fatalf("chunk should not include standalone title-only section: %q", chunks[0].Content)
+	}
+	if !strings.Contains(chunks[0].Content, "Bruno is a Senior Software Engineer") {
+		t.Fatalf("chunk missing profile content: %q", chunks[0].Content)
+	}
+}

@@ -8,6 +8,7 @@ import (
 const (
 	defaultMaxWords     = 520
 	defaultOverlapWords = 80
+	chunkerVersion      = "chunker-v2"
 )
 
 type ParsedMarkdown struct {
@@ -128,7 +129,7 @@ func splitSections(body string) []markdownSection {
 
 	flush := func() {
 		content := strings.TrimSpace(strings.Join(current, "\n"))
-		if content != "" {
+		if content != "" && hasNonHeadingContent(content) {
 			sections = append(sections, markdownSection{
 				heading: currentHeading,
 				content: content,
@@ -151,4 +152,18 @@ func splitSections(body string) []markdownSection {
 		return []markdownSection{{content: body}}
 	}
 	return sections
+}
+
+func hasNonHeadingContent(content string) bool {
+	for _, line := range strings.Split(content, "\n") {
+		trimmed := strings.TrimSpace(line)
+		if trimmed == "" {
+			continue
+		}
+		if strings.HasPrefix(trimmed, "#") && strings.Contains(trimmed, " ") {
+			continue
+		}
+		return true
+	}
+	return false
 }

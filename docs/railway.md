@@ -11,7 +11,6 @@ Set the API service variables from `.env.example`:
 
 ```bash
 APP_ENV=production
-HTTP_ADDR=:8080
 DATABASE_URL=${{Postgres.DATABASE_URL}}
 OPENAI_API_KEY=...
 OPENAI_BASE_URL=https://api.openai.com
@@ -29,24 +28,30 @@ RATE_LIMIT_PER_DAY=100
 CACHE_TTL=24h
 ```
 
+Do not set `HTTP_ADDR` on Railway unless you need a fixed port. The app reads Railway's injected `PORT` variable and listens on that port automatically.
+
 ## Migrations
 
-Run migrations as a one-off command:
+Migrations run automatically before deploy through `railway.toml`:
 
 ```bash
-goose -dir internal/db/migrations postgres "$DATABASE_URL" up
+ask-my-cv migrate-up
 ```
+
+That command is built into the production binary, so the deployed image does not need the external `goose` CLI.
 
 ## Ingestion
 
 After curated Markdown changes, run:
 
 ```bash
-go run main.go ingest ./data
+railway run task ingest
 ```
+
+This runs ingestion from your local checkout using Railway's production variables, so it writes embeddings into the Railway Postgres database.
 
 The API command is:
 
 ```bash
-go run main.go serve-api
+ask-my-cv serve-api
 ```

@@ -34,7 +34,7 @@ func Load() (Config, error) {
 
 	cfg := Config{
 		AppEnv:                getEnv("APP_ENV", "development"),
-		HTTPAddr:              getEnv("HTTP_ADDR", ":8080"),
+		HTTPAddr:              getHTTPAddr(),
 		DatabaseURL:           getEnv("DATABASE_URL", "postgres://ask_my_cv:ask_my_cv@localhost:5432/ask_my_cv?sslmode=disable"),
 		OpenAIAPIKey:          os.Getenv("OPENAI_API_KEY"),
 		OpenAIBaseURL:         strings.TrimRight(getEnv("OPENAI_BASE_URL", "https://api.openai.com"), "/"),
@@ -71,6 +71,16 @@ func getEnv(key, fallback string) string {
 		return fallback
 	}
 	return value
+}
+
+func getHTTPAddr() string {
+	if value := strings.TrimSpace(os.Getenv("HTTP_ADDR")); value != "" {
+		return value
+	}
+	if port := strings.TrimSpace(os.Getenv("PORT")); port != "" {
+		return ":" + strings.TrimPrefix(port, ":")
+	}
+	return ":8080"
 }
 
 func getEnvInt(key string, fallback int) int {

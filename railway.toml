@@ -2,7 +2,7 @@
 builder = "DOCKERFILE"
 
 [deploy]
-preDeployCommand = ["ask-my-cv migrate-up"]
+preDeployCommand = ["ask-my-cv init /app/data"]
 healthcheckPath = "/health"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"

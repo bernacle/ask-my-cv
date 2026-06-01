@@ -14,6 +14,8 @@ func Execute(args []string) int {
 	switch args[0] {
 	case "serve-api":
 		return runServeAPI(args[1:])
+	case "init":
+		return runInit(args[1:])
 	case "ingest":
 		return runIngest(args[1:])
 	case "migrate-up":
@@ -30,6 +32,7 @@ func Execute(args []string) int {
 
 func printUsage() {
 	fmt.Fprintln(os.Stderr, "usage:")
+	fmt.Fprintln(os.Stderr, "  ask-my-cv init ./data")
 	fmt.Fprintln(os.Stderr, "  ask-my-cv serve-api")
 	fmt.Fprintln(os.Stderr, "  ask-my-cv ingest ./data")
 	fmt.Fprintln(os.Stderr, "  ask-my-cv migrate-up")

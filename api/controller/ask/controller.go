@@ -2,6 +2,7 @@ package ask
 
 import (
 	"encoding/json"
+	"log/slog"
 	"net/http"
 	"strings"
 	"unicode/utf8"
@@ -62,6 +63,10 @@ func (c *Controller) Ask(w http.ResponseWriter, r *http.Request) {
 		UserAgent:      r.UserAgent(),
 	})
 	if err != nil {
+		slog.ErrorContext(r.Context(), "ask failed",
+			"request_id", telemetry.RequestID(r.Context()),
+			"error", err,
+		)
 		response.Error(w, r, err)
 		return
 	}

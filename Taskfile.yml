@@ -154,6 +154,11 @@ tasks:
       - task: ingest
       - task: serve
 
+  init:
+    desc: Run migrations and ingest data without starting the API
+    cmds:
+      - "{{.GO}} run main.go init {{.DATA_DIR}}"
+
   health:
     desc: Check local API health
     cmds:

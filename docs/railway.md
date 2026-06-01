@@ -32,23 +32,23 @@ Do not set `HTTP_ADDR` on Railway unless you need a fixed port. The app reads Ra
 
 ## Migrations
 
-Migrations run automatically before deploy through `railway.toml`:
+Migrations and ingestion run automatically before deploy through `railway.toml`:
 
 ```bash
-ask-my-cv migrate-up
+ask-my-cv init /app/data
 ```
 
-That command is built into the production binary, so the deployed image does not need the external `goose` CLI.
+That command is built into the production binary. It applies migrations, then ingests the Markdown files copied into the Docker image at `/app/data`. The ingest step is idempotent, so unchanged documents are skipped.
 
 ## Ingestion
 
-After curated Markdown changes, run:
+After curated Markdown changes, push and redeploy the API service. The pre-deploy initialization command reingests changed files automatically.
+
+You can also run ingestion manually from a Railway container if needed:
 
 ```bash
-railway run task ingest
+railway ssh --service ask-my-cv -- /usr/local/bin/ask-my-cv ingest /app/data
 ```
-
-This runs ingestion from your local checkout using Railway's production variables, so it writes embeddings into the Railway Postgres database.
 
 The API command is:
 

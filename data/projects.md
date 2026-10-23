@@ -10,6 +10,12 @@ Bruno builds backend and frontend systems for a modern cloud platform serving AI
 
 Relevant work includes Go API resources for Projects, Organizations, Memberships, role-based access patterns, customer accounts, customer dashboard development, marketing site development, authentication flows, API integration, production deployment, observability, and security-sensitive identity flows.
 
+## Networking And Compute Provisioning At Nirvana Labs
+
+Bruno extended the cloud API to support a second networking and compute backend.
+
+He implemented Temporal workflows for VPC provisioning and teardown, VM provisioning, and firewall rules in a new region. The work included public IPs, NAT, CIDR allocation, capacity checks, retries, and rollback.
+
 ## WorkOS Identity Migration
 
 At Nirvana Labs, Bruno led a migration from Auth0 to WorkOS across the dashboard and API.
@@ -18,7 +24,7 @@ The migration enabled enterprise SSO, SCIM directory sync, and SIEM audit loggin
 
 ## Notabene Travel Rule Platform
 
-At Notabene, Bruno helped build a Travel Rule API and dashboard used by crypto companies to support regulatory compliance.
+Bruno joined Notabene (YC S20) as its second engineering hire and helped build a Travel Rule API and dashboard used by crypto companies to support regulatory compliance.
 
 Related work included transaction decision rules, exchange data-collection widgets, internal tools, customer-facing workflows, Terraform infrastructure provisioning, and production service operations.
 

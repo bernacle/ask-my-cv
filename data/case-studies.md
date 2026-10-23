@@ -4,6 +4,12 @@ title: Case Studies
 
 # Case Studies
 
+## Networking And Compute Backend At Nirvana Labs
+
+Bruno extended the Nirvana Labs cloud API to support a second networking and compute backend.
+
+He implemented Temporal workflows for VPC provisioning and teardown, VM provisioning, and firewall rules in a new region, including public IPs, NAT, CIDR allocation, capacity checks, retries, and rollback.
+
 ## Enterprise Identity Migration At Nirvana Labs
 
 Bruno led the migration from Auth0 to WorkOS across the Nirvana Labs dashboard and API.
@@ -12,7 +18,7 @@ The work enabled enterprise SSO, SCIM directory sync, and SIEM audit logging. It
 
 ## Crypto Compliance Platform At Notabene
 
-Bruno joined Notabene as one of the first engineers and helped build a Travel Rule API and dashboard used by crypto companies to support regulatory compliance.
+Bruno joined Notabene (YC S20) as its second engineering hire and helped build a Travel Rule API and dashboard used by crypto companies to support regulatory compliance.
 
 He built transaction decision rules, exchange data-collection widgets, internal tools, and customer-facing workflows for regulated crypto transactions.
 

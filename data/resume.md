@@ -6,77 +6,68 @@ title: Resume
 
 ## Profile
 
-Bruno Simplicio is a Senior Software Engineer based in Dourados, Brazil, with 11 years of experience building production software across backend, frontend, and cloud infrastructure.
+Bruno Simplicio is a Senior Software Engineer based in Dourados, Brazil, with 11 years of experience building product and platform systems across fintech, cloud infrastructure, and developer-facing software.
 
-He has a strong background in Go, TypeScript, PostgreSQL, Kubernetes, event-driven systems, secure APIs, identity, observability, Open Finance, and crypto compliance.
+He has a strong background in Go, TypeScript, PostgreSQL, Kubernetes, Temporal, distributed systems, identity, and end-to-end product delivery.
 
 ## Contact And Public Profiles
 
 - Email: dev@brunosimplicio.com
-- Public profiles: LinkedIn, GitHub, Website
+- Phone: +55 61 99969 5564
+- Website: https://brunosimplicio.com
+- LinkedIn: https://linkedin.com/in/bruno-simplicio-790a4a30
+- GitHub: https://github.com/bernacle
 
 ## Core Skills
 
 - Languages: Go, TypeScript, JavaScript, Java, SQL
-- Backend: REST APIs, microservices, distributed systems, GORM, Gin, Node.js, PostgreSQL, Kafka
-- Cloud and Infrastructure: Kubernetes, Terraform, Temporal, OpenTelemetry, Sentry, cloud-native systems
-- Frontend: Next.js, React, React Native, Tailwind CSS, customer dashboards, developer platforms
-- Security and Compliance: WorkOS, SSO, SCIM, SIEM audit logging, OAuth 2.0, secure APIs, financial compliance
+- Backend and Platform: Node.js, REST APIs, microservices, distributed systems, PostgreSQL, Kafka, Temporal, event-driven systems
+- Cloud and Infrastructure: Kubernetes, AWS, Terraform, OpenTelemetry, Sentry
+- Frontend: React, Next.js, React Native, Tailwind CSS, customer dashboards, developer platforms
+- Identity and Security: WorkOS, Auth0, SSO, SCIM, OAuth 2.0, SIEM audit logging, secure APIs
 
 ## Professional Experience
 
 ### Senior Software Engineer, Nirvana Labs, Remote, 2025 - Present
 
-- Builds backend and frontend systems for a modern cloud platform serving AI, gaming, blockchain, and real-time workloads.
-- Designed and shipped Go API resources including Projects, Organizations, Memberships, and role-based access patterns for multi-tenant customer accounts.
-- Built the customer dashboard and marketing site from the ground up, owning frontend architecture, API integration, authentication flows, and production deployment.
-- Led the migration from Auth0 to WorkOS across the dashboard and API, enabling enterprise SSO, SCIM directory sync, and SIEM audit logging.
-- Works across cloud infrastructure, product UI, backend services, observability, and security-sensitive identity flows in a small engineering team.
+- Extended the cloud API to support a second networking and compute backend.
+- Implemented Temporal workflows for VPC provisioning and teardown, VM provisioning, and firewall rules in a new region, including public IPs, NAT, CIDR allocation, capacity checks, retries, and rollback.
+- Designed and shipped Go API resources for Projects, Organizations, Memberships, and role-based access across multi-tenant customer accounts.
+- Built the customer dashboard from the ground up, owning frontend architecture, API integration, authentication flows, and production deployment.
+- Led the migration from Auth0 to WorkOS, enabling enterprise SSO, SCIM directory sync, and SIEM audit logging.
 
 ### Senior Software Engineer, Notabene, Remote, 2021 - 2025
 
-- Joined as one of the first engineers and helped build a Travel Rule API and dashboard used by crypto companies to support regulatory compliance.
+- Joined Notabene (YC S20) as its second engineering hire and helped build a Travel Rule API and dashboard used by crypto companies for regulatory compliance.
 - Built transaction decision rules, exchange data-collection widgets, internal tools, and customer-facing workflows for regulated crypto transactions.
-- Contributed to infrastructure provisioning with Terraform and production service operations across backend, frontend, and platform responsibilities.
-- Helped evolve the platform from a monorepo toward microservices using Kafka to improve service boundaries, scalability, and availability.
-- Supported startup growth beyond engineering by participating in hiring, interviewing, onboarding, and mentoring new engineers.
+- Worked across backend, frontend, Terraform, and production operations, and helped evolve the platform toward Kafka-backed microservices.
 
-### Lead Backend Engineer, Banco do Brasil, Brasilia, 2020 - 2021
+### Lead Backend Engineer, Banco do Brasil, Brasilia, Brazil, 2020 - 2021
 
 - Scoped and built a Node.js and PostgreSQL application to automate API design workflows for the bank's Open Finance initiative.
-- Reduced manual API design work by creating internal tooling for a compact team of developers and one project manager.
-- Delivered production software in a highly regulated banking environment with strong requirements for reliability, security, and maintainability.
 
 ### React Native Engineer, Crowdbotics, Remote, 2020
 
-- Delivered a React Native mobile app for a medical and aesthetic business, improving appointment scheduling and patient experience.
-- Built features including live maps with directions, Square payments, image and PDF uploads, and chat messaging.
+- Delivered a React Native mobile app with live maps, Square payments, file uploads, and chat messaging.
 
 ### Full Stack Engineer and Co-Founder, Combinis, Remote, 2019 - 2020
 
-- Co-founded and launched an internal classified advertisements app for employees of large companies using React Native and Firebase.
-- Reached 2,000 downloads within one week of release before the product was discontinued during the pandemic.
+- Co-founded and launched an internal marketplace app using React Native and Firebase, reaching 2,000 downloads in its first week.
 
-### Lead Full Stack Engineer, Banco do Brasil, Brasilia, 2018 - 2020
+### Lead Full Stack Engineer / API Software Engineer, Banco do Brasil, Brasilia, Brazil, 2017 - 2020
 
-- Led a team of developers building an Open Finance developer platform for external developers and bank API services.
-- Built platform features using Angular and Java to improve API discovery, developer experience, and internal service delivery.
+- Led development of an Open Finance developer platform and modernized legacy banking services into REST APIs using Angular, Java, and OAuth 2.0.
 
-### API Software Engineer, Banco do Brasil, Brasilia, 2017 - 2018
+### Junior Software Engineer, Banco do Brasil, Brasilia, Brazil, 2015 - 2017
 
-- Modernized legacy banking services into RESTful APIs using Java.
-- Implemented OAuth 2.0 security patterns to strengthen API access control and protect banking services.
-
-### Junior Software Engineer, Banco do Brasil, Brasilia, 2015 - 2017
-
-- Built and maintained AngularJS and Java applications while collaborating with senior engineers on production banking systems.
+- Built and maintained AngularJS and Java applications while contributing to production banking systems.
 
 ## Education
 
-- Bachelor's Degree in Information Systems, Universidade Federal da Grande Dourados, Dourados, 2007 - 2012
+- Bachelor's Degree in Information Systems, Universidade Federal da Grande Dourados, Dourados, Brazil, 2007 - 2012
 
 ## Languages
 
 - English: Highly proficient
-- Portuguese: Native speaker
+- Portuguese: Native
 - Italian: Good working knowledge

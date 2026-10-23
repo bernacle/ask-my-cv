@@ -22,10 +22,13 @@ title: Skills
 - Node.js
 - PostgreSQL
 - Kafka
+- Temporal
+- Event-driven systems
 
 ## Cloud And Infrastructure
 
 - Kubernetes
+- AWS
 - Terraform
 - Temporal
 - OpenTelemetry
@@ -44,6 +47,7 @@ title: Skills
 ## Security And Compliance
 
 - WorkOS
+- Auth0
 - SSO
 - SCIM
 - SIEM audit logging

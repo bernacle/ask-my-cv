@@ -8,7 +8,9 @@ title: Backend And Architecture
 
 At Nirvana Labs, Bruno has worked on backend systems for a modern cloud platform serving AI, gaming, blockchain, and real-time workloads.
 
-He designed and shipped Go API resources such as Projects, Organizations, Memberships, and role-based access patterns for multi-tenant customer accounts. He also worked on workflows with Temporal for creating resources and coordinating backend operations.
+He designed and shipped Go API resources such as Projects, Organizations, Memberships, and role-based access patterns for multi-tenant customer accounts.
+
+He extended the cloud API to support a second networking and compute backend. He implemented Temporal workflows for VPC provisioning and teardown, VM provisioning, and firewall rules in a new region. These workflows included public IPs, NAT, CIDR allocation, capacity checks, retries, and rollback.
 
 A major project was the migration from Auth0 to WorkOS across the dashboard and API. This involved authentication, identity, enterprise SSO, SCIM directory sync, and SIEM audit logging.
 
@@ -33,6 +35,8 @@ At Notabene, Bruno improved how large CSV exports were handled. Instead of proce
 He also helped evolve parts of the Notabene system from a monorepo toward more focused services with Kafka. This improved service boundaries and helped the system scale better as the product grew.
 
 At Nirvana Labs, Bruno has worked on identity and resource-creation flows where reliability matters because they affect customer access, organizations, projects, memberships, and enterprise authentication.
+
+His Temporal provisioning workflows at Nirvana Labs included capacity checks, retries, and rollback for VPC, VM, and firewall operations in a new region.
 
 ## Database Design
 

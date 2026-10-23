@@ -34,7 +34,9 @@ At Nirvana Labs, Bruno shipped:
 
 - Go API resources for Projects, Organizations, and Memberships
 - Role-based access patterns for multi-tenant customer accounts
-- Resource creation workflows using Temporal
+- Cloud API support for a second networking and compute backend
+- Temporal workflows for VPC provisioning and teardown, VM provisioning, and firewall rules in a new region
+- Public IPs, NAT, CIDR allocation, capacity checks, retries, and rollback in provisioning workflows
 - Customer dashboard built from the ground up
 - Marketing site built from the ground up
 - API integration between frontend and backend systems
@@ -63,7 +65,7 @@ At Notabene, Bruno shipped:
 - Business-day tracking for incomplete transaction workflows
 - Frontend dashboard improvements
 
-Bruno joined Notabene as one of the first engineers and helped the product grow from an early-stage system into a broader compliance platform.
+Bruno joined Notabene (YC S20) as its second engineering hire and helped the product grow from an early-stage system into a broader compliance platform.
 
 ## Work Shipped At Banco Do Brasil
 

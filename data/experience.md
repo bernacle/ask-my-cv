@@ -10,6 +10,8 @@ Bruno is a Senior Software Engineer at Nirvana Labs, working remotely since 2025
 
 He builds backend and frontend systems for a modern cloud platform serving AI, gaming, blockchain, and real-time workloads. His work includes Go API resources such as Projects, Organizations, Memberships, and role-based access patterns for multi-tenant customer accounts.
 
+He extended the cloud API to support a second networking and compute backend. He implemented Temporal workflows for VPC provisioning and teardown, VM provisioning, and firewall rules in a new region, including public IPs, NAT, CIDR allocation, capacity checks, retries, and rollback.
+
 He also built the customer dashboard and marketing site from the ground up, owning frontend architecture, API integration, authentication flows, and production deployment.
 
 He led the migration from Auth0 to WorkOS across the dashboard and API, enabling enterprise SSO, SCIM directory sync, and SIEM audit logging.
@@ -18,7 +20,7 @@ He led the migration from Auth0 to WorkOS across the dashboard and API, enabling
 
 Bruno worked as a Senior Software Engineer at Notabene from 2021 to 2025.
 
-He joined as one of the first engineers and helped build a Travel Rule API and dashboard used by crypto companies to support regulatory compliance.
+He joined Notabene (YC S20) as its second engineering hire and helped build a Travel Rule API and dashboard used by crypto companies to support regulatory compliance.
 
 His work included transaction decision rules, exchange data-collection widgets, internal tools, and customer-facing workflows for regulated crypto transactions.
 

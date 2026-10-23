@@ -8,7 +8,7 @@ title: Professional Profile
 
 Bruno Simplicio is a senior full-stack engineer, backend-leaning, with 11 years of experience building production software across backend, frontend, APIs, identity, fintech, and compliance systems.
 
-His strongest areas include Go, TypeScript, Node.js, React, PostgreSQL, APIs, microservices, event-driven systems, and product engineering.
+His strongest areas include Go, TypeScript, Node.js, React, PostgreSQL, APIs, microservices, distributed systems, Temporal workflows, event-driven systems, and product engineering.
 
 He likes owning work end-to-end: understanding the problem, designing the solution, building the backend, connecting the frontend, shipping it, and improving it after real usage.
 
@@ -53,7 +53,9 @@ Bruno's background combines startup execution, fintech, banking, compliance, ide
 
 At Nirvana Labs, he works on a modern cloud product in a small team, building Go APIs, frontend features, authentication flows, WorkOS integration, and customer-facing product surfaces.
 
-At Notabene, he joined as one of the first engineers and helped build Travel Rule infrastructure for crypto compliance, including APIs, dashboards, widgets, integrations, decision rules, and Kafka-based services.
+He extended the Nirvana Labs cloud API to support a second networking and compute backend, including Temporal workflows for VPC provisioning and teardown, VM provisioning, and firewall rules in a new region.
+
+At Notabene (YC S20), he joined as its second engineering hire and helped build Travel Rule infrastructure for crypto compliance, including APIs, dashboards, widgets, integrations, decision rules, and Kafka-based services.
 
 At Banco do Brasil, he worked on Open Finance, secure APIs, OAuth 2.0, developer platforms, and banking systems in a highly regulated environment.
 

@@ -170,7 +170,11 @@ WHERE d.embedding_model = $1
     FROM unnest($2::text[]) AS keyword
     WHERE c.content ILIKE ('%' || keyword || '%')
   )
-ORDER BY c.source_path, c.chunk_index
+ORDER BY (
+    SELECT count(*)
+    FROM unnest($2::text[]) AS keyword
+    WHERE c.content ILIKE ('%' || keyword || '%')
+) DESC, c.source_path, c.chunk_index
 LIMIT $3
 `
 

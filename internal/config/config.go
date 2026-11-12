@@ -39,7 +39,7 @@ func Load() (Config, error) {
 		OpenAIAPIKey:          os.Getenv("OPENAI_API_KEY"),
 		OpenAIBaseURL:         strings.TrimRight(getEnv("OPENAI_BASE_URL", "https://api.openai.com"), "/"),
 		OpenAIEmbeddingModel:  getEnv("OPENAI_EMBEDDING_MODEL", "text-embedding-3-small"),
-		OpenAIChatModel:       getEnv("OPENAI_CHAT_MODEL", "gpt-5.4-mini"),
+		OpenAIChatModel:       getEnv("OPENAI_CHAT_MODEL", "gpt-6-luna"),
 		OpenAIReasoningEffort: getEnv("OPENAI_REASONING_EFFORT", "low"),
 		OpenAITextVerbosity:   getEnv("OPENAI_TEXT_VERBOSITY", "low"),
 		CORSAllowedOrigins:    splitCSV(getEnv("CORS_ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:3001,https://brunosimplicio.com")),

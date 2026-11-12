@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"strings"
 	"testing"
+	"time"
 
 	db "github.com/brunosimplicio/ask-my-cv/internal/db/sqlc"
 	domainchunk "github.com/brunosimplicio/ask-my-cv/internal/domain/chunk"
@@ -64,6 +65,41 @@ func TestAskNoSourceDoesNotCallChat(t *testing.T) {
 	}
 	if result.TokenUsage == nil || result.TokenUsage.TotalTokens != 7 {
 		t.Fatalf("token usage = %#v, want total 7", result.TokenUsage)
+	}
+}
+
+func TestAskNormalizesDashesInAnswer(t *testing.T) {
+	messages := &fakeMessages{}
+	chatService := &fakeChat{text: "Bruno led the WorkOS migration — enabling SSO and SCIM."}
+
+	service := New(
+		fakeEmbedder{},
+		fakeChunkSearcher{results: []domainchunk.SearchResult{
+			{Similarity: 0.9, SourceTitle: "Resume", SourcePath: "data/resume.md", Content: "WorkOS migration"},
+		}},
+		fakeConversations{id: uuid.New()},
+		messages,
+		&fakeAnalytics{},
+		chatService,
+		6,
+		0.72,
+		time.Hour,
+	)
+
+	input := AskInput{Question: "Did Bruno work with WorkOS?", RequestID: "req-1"}
+	want := "Bruno led the WorkOS migration, enabling SSO and SCIM."
+
+	for attempt := 1; attempt <= 2; attempt++ {
+		result, err := service.Ask(context.Background(), input)
+		if err != nil {
+			t.Fatalf("Ask() attempt %d error = %v", attempt, err)
+		}
+		if result.Answer != want {
+			t.Fatalf("Answer attempt %d = %q, want %q", attempt, result.Answer, want)
+		}
+	}
+	if got := messages.contents[1]; got != want {
+		t.Fatalf("persisted answer = %q, want %q", got, want)
 	}
 }
 
@@ -161,11 +197,13 @@ func (f fakeConversations) Ensure(context.Context, *uuid.UUID) (db.Conversation,
 func (fakeConversations) Touch(context.Context, uuid.UUID) error { return nil }
 
 type fakeMessages struct {
-	roles []string
+	roles    []string
+	contents []string
 }
 
-func (f *fakeMessages) Create(_ context.Context, _ uuid.UUID, role string, _ string, _ json.RawMessage) (db.Message, error) {
+func (f *fakeMessages) Create(_ context.Context, _ uuid.UUID, role string, content string, _ json.RawMessage) (db.Message, error) {
 	f.roles = append(f.roles, role)
+	f.contents = append(f.contents, content)
 	return db.Message{Role: role}, nil
 }
 
@@ -186,11 +224,16 @@ func (f *fakeAnalytics) CreateTokenUsage(_ context.Context, usage analyticsrepo.
 
 type fakeChat struct {
 	called bool
+	text   string
 }
 
-func (f *fakeChat) Model() string { return "gpt-5.4-mini" }
+func (f *fakeChat) Model() string { return "gpt-6-luna" }
 
 func (f *fakeChat) Answer(context.Context, string, string) (chat.Result, error) {
 	f.called = true
-	return chat.Result{Text: "answer"}, nil
+	text := f.text
+	if text == "" {
+		text = "answer"
+	}
+	return chat.Result{Text: text}, nil
 }

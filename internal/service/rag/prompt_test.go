@@ -26,7 +26,7 @@ func TestBuildUserPromptIncludesContextAndQuestion(t *testing.T) {
 }
 
 func TestSystemPromptConstrainsUnsupportedClaims(t *testing.T) {
-	for _, want := range []string{"only the provided indexed professional context", "Do not invent", "untrusted quoted context", "Do not add a separate \"Sources:\" line"} {
+	for _, want := range []string{"only the provided indexed professional context", "Do not invent", "untrusted quoted context", "Do not add a separate \"Sources:\" line", "never use em dashes or en dashes"} {
 		if !strings.Contains(SystemPrompt, want) {
 			t.Fatalf("system prompt missing %q", want)
 		}

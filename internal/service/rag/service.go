@@ -241,8 +241,9 @@ func (s *Service) Ask(ctx context.Context, input AskInput) (AskResult, error) {
 		return AskResult{}, err
 	}
 
+	answerText := normalizeDashes(answer.Text)
 	citations := citationsFromChunks(used)
-	if err := s.persistExchange(ctx, conversation.ID, question, answer.Text, citations); err != nil {
+	if err := s.persistExchange(ctx, conversation.ID, question, answerText, citations); err != nil {
 		return AskResult{}, err
 	}
 	_ = s.conversations.Touch(ctx, conversation.ID)
@@ -262,7 +263,7 @@ func (s *Service) Ask(ctx context.Context, input AskInput) (AskResult, error) {
 	}
 
 	s.setCached(normalized, cacheEntry{
-		answer:     answer.Text,
+		answer:     answerText,
 		citations:  citations,
 		expiresAt:  time.Now().Add(s.cacheTTL),
 		answered:   true,
@@ -271,7 +272,7 @@ func (s *Service) Ask(ctx context.Context, input AskInput) (AskResult, error) {
 	})
 
 	return AskResult{
-		Answer:         answer.Text,
+		Answer:         answerText,
 		ConversationID: conversation.ID,
 		Citations:      citations,
 		SourcesUsed:    citations,
